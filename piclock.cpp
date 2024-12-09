@@ -154,12 +154,12 @@ void DrawFrame(NVGcontext *vg, int iwidth, int iheight)
 	nvgFontFace(vg, globalState.FontDate().c_str());
 	nvgFillColor(vg, nvgRGB(255, 255, 255)); // White text
 
-	// Format the day and date string (abbreviated format, no year)
+	// Format the day and date string (no comma between day and month)
 	char dateStr[64];
-	strftime(dateStr, sizeof(dateStr), "%a, %b %d", &tm_local); // Abbreviated day and month
+	strftime(dateStr, sizeof(dateStr), "%a %b %d", &tm_local); // No comma
 
 	// Determine font size for the day and date
-	float dateFontSize = iheight * 0.15; // Smaller font size for day/date
+	float dateFontSize = iheight * 0.165; // 10% larger
 	nvgFontSize(vg, dateFontSize);
 
 	// Measure text bounds for the day and date
@@ -170,8 +170,8 @@ void DrawFrame(NVGcontext *vg, int iwidth, int iheight)
 	float dateTextHeight = dateBounds[3] - dateBounds[1];
 	float dateX = (iwidth - dateTextWidth) / 2.0f;
 
-	// Position the date in the upper half of the screen
-	float dateY = (iheight / 4.0f) + (dateTextHeight / 2.0f);
+	// Position the date higher on the screen (top 1/3rd)
+	float dateY = (iheight / 6.0f) + (dateTextHeight / 2.0f);
 
 	// Render the day and date
 	nvgText(vg, dateX, dateY, dateStr, NULL);
@@ -180,12 +180,12 @@ void DrawFrame(NVGcontext *vg, int iwidth, int iheight)
 	nvgFontFace(vg, globalState.FontDigital().c_str());
 	nvgFillColor(vg, nvgRGB(255, 255, 255)); // White text
 
-	// Format the local time string (hours and minutes only)
+	// Format the local time string (12-hour format with AM/PM)
 	char timeStr[64];
-	strftime(timeStr, sizeof(timeStr), "%H:%M", &tm_local);
+	strftime(timeStr, sizeof(timeStr), "%I:%M %p", &tm_local); // 12-hour format
 
-	// Determine font size for the time (increased by 20%)
-	float timeFontSize = iheight * 0.48; // Larger font size for time
+	// Determine font size for the time
+	float timeFontSize = iheight * 0.35; // Current font size for the time
 	nvgFontSize(vg, timeFontSize);
 
 	// Measure text bounds for the time
@@ -196,9 +196,17 @@ void DrawFrame(NVGcontext *vg, int iwidth, int iheight)
 	float timeTextHeight = timeBounds[3] - timeBounds[1];
 	float timeX = (iwidth - timeTextWidth) / 2.0f;
 
-	// Position the time in the center of the screen
-	float timeY = (iheight / 2.0f) + (timeTextHeight / 2.0f);
+	// Move the time significantly lower (bottom 1/3rd)
+	float timeY = (iheight / 2.0f) + (iheight / 4.0f);
+
+	// Apply a vertical scaling transformation for taller text
+	nvgSave(vg);					// Save the current transformation state
+	nvgTranslate(vg, timeX, timeY); // Move the origin to the text's position
+	nvgScale(vg, 1.0, 1.5);			// Scale the text vertically by 1.5 times
 
 	// Render the time
-	nvgText(vg, timeX, timeY, timeStr, NULL);
+	nvgText(vg, 0, 0, timeStr, NULL);
+
+	// Restore the original transformation state
+	nvgRestore(vg);
 }

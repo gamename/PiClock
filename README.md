@@ -14,7 +14,7 @@ Checkout this project by:
         # Install git if you don't already have it
 	sudo apt-get install git
         # Checkout the main project and it's submodules
-	git clone --recursive https://github.com/simonhyde/PiClock.git
+	git clone --recursive https://github.com/gamename/PiClock.git
 ```
 
 Build

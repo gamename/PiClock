@@ -138,75 +138,75 @@ void NvgInit(NVGcontext *vg)
 
 void DrawFrame(NVGcontext *vg, int iwidth, int iheight)
 {
-	static struct tm tm_local;
+    static struct tm tm_local;
 
-	// Update the current time
-	gettimeofday(&tval, NULL);
-	localtime_r(&tval.tv_sec, &tm_local);
+    // Update the current time
+    gettimeofday(&tval, NULL);
+    localtime_r(&tval.tv_sec, &tm_local);
 
-	// Set the background color
-	nvgBeginPath(vg);
-	nvgRect(vg, 0, 0, iwidth, iheight);
-	nvgFillColor(vg, nvgRGB(0, 0, 0)); // Black background
-	nvgFill(vg);
+    // Set the background color
+    nvgBeginPath(vg);
+    nvgRect(vg, 0, 0, iwidth, iheight);
+    nvgFillColor(vg, nvgRGB(0, 0, 0)); // Black background
+    nvgFill(vg);
 
-	// Set the text color and font for the day and date
-	nvgFontFace(vg, globalState.FontDate().c_str());
-	nvgFillColor(vg, nvgRGB(255, 255, 255)); // White text
+    // Set the text color and font for the day and date
+    nvgFontFace(vg, globalState.FontDate().c_str());
+    nvgFillColor(vg, nvgRGB(255, 255, 255)); // White text
 
-	// Format the day and date string (no comma between day and month)
-	char dateStr[64];
-	strftime(dateStr, sizeof(dateStr), "%a %b %d", &tm_local); // No comma
+    // Format the day and date string (no comma between day and month)
+    char dateStr[64];
+    strftime(dateStr, sizeof(dateStr), "%a %b %d", &tm_local); // No comma
 
-	// Determine font size for the day and date
-	float dateFontSize = iheight * 0.165; // 10% larger
-	nvgFontSize(vg, dateFontSize);
+    // Determine font size for the day and date
+    float dateFontSize = iheight * 0.165; // 10% larger
+    nvgFontSize(vg, dateFontSize);
 
-	// Measure text bounds for the day and date
-	float dateBounds[4];
-	nvgTextBounds(vg, 0, 0, dateStr, NULL, dateBounds);
+    // Measure text bounds for the day and date
+    float dateBounds[4];
+    nvgTextBounds(vg, 0, 0, dateStr, NULL, dateBounds);
 
-	float dateTextWidth = dateBounds[2] - dateBounds[0];
-	float dateTextHeight = dateBounds[3] - dateBounds[1];
-	float dateX = (iwidth - dateTextWidth) / 2.0f;
+    float dateTextWidth = dateBounds[2] - dateBounds[0];
+    float dateTextHeight = dateBounds[3] - dateBounds[1];
+    float dateX = (iwidth - dateTextWidth) / 2.0f;
 
-	// Position the date higher on the screen (top 1/3rd)
-	float dateY = (iheight / 6.0f) + (dateTextHeight / 2.0f);
+    // Position the date higher on the screen (top 1/3rd)
+    float dateY = (iheight / 6.0f) + (dateTextHeight / 2.0f);
 
-	// Render the day and date
-	nvgText(vg, dateX, dateY, dateStr, NULL);
+    // Render the day and date
+    nvgText(vg, dateX, dateY, dateStr, NULL);
 
-	// Set the text color and font for the time
-	nvgFontFace(vg, globalState.FontDigital().c_str());
-	nvgFillColor(vg, nvgRGB(255, 255, 255)); // White text
+    // Set the text color and font for the time
+    nvgFontFace(vg, globalState.FontDigital().c_str());
+    nvgFillColor(vg, nvgRGB(255, 255, 255)); // White text
 
-	// Format the local time string (12-hour format with AM/PM)
-	char timeStr[64];
-	strftime(timeStr, sizeof(timeStr), "%I:%M %p", &tm_local); // 12-hour format
+    // Format the local time string (12-hour format with AM/PM)
+    char timeStr[64];
+    strftime(timeStr, sizeof(timeStr), "%I:%M %p", &tm_local); // 12-hour format
 
-	// Determine font size for the time
-	float timeFontSize = iheight * 0.35; // Current font size for the time
-	nvgFontSize(vg, timeFontSize);
+    // Determine font size for the time (reduced by 10%)
+    float timeFontSize = iheight * 0.315; // Reduced from 0.35 to 0.315
+    nvgFontSize(vg, timeFontSize);
 
-	// Measure text bounds for the time
-	float timeBounds[4];
-	nvgTextBounds(vg, 0, 0, timeStr, NULL, timeBounds);
+    // Measure text bounds for the time
+    float timeBounds[4];
+    nvgTextBounds(vg, 0, 0, timeStr, NULL, timeBounds);
 
-	float timeTextWidth = timeBounds[2] - timeBounds[0];
-	float timeTextHeight = timeBounds[3] - timeBounds[1];
-	float timeX = (iwidth - timeTextWidth) / 2.0f;
+    float timeTextWidth = timeBounds[2] - timeBounds[0];
+    float timeTextHeight = timeBounds[3] - timeBounds[1];
+    float timeX = (iwidth - timeTextWidth) / 2.0f;
 
-	// Move the time significantly lower (bottom 1/3rd)
-	float timeY = (iheight / 2.0f) + (iheight / 4.0f);
+    // Move the time significantly lower (bottom 1/3rd)
+    float timeY = (iheight / 2.0f) + (iheight / 4.0f);
 
-	// Apply a vertical scaling transformation for taller text
-	nvgSave(vg);					// Save the current transformation state
-	nvgTranslate(vg, timeX, timeY); // Move the origin to the text's position
-	nvgScale(vg, 1.0, 1.5);			// Scale the text vertically by 1.5 times
+    // Apply a vertical scaling transformation for taller text
+    nvgSave(vg);                    // Save the current transformation state
+    nvgTranslate(vg, timeX, timeY); // Move the origin to the text's position
+    nvgScale(vg, 1.0, 1.5);         // Scale the text vertically by 1.5 times
 
-	// Render the time
-	nvgText(vg, 0, 0, timeStr, NULL);
+    // Render the time
+    nvgText(vg, 0, 0, timeStr, NULL);
 
-	// Restore the original transformation state
-	nvgRestore(vg);
+    // Restore the original transformation state
+    nvgRestore(vg);
 }
